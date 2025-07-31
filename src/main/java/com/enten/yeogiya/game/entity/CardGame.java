@@ -11,16 +11,16 @@ import java.util.Map;
 @Entity
 @Getter
 @Setter
-public class DiceGame {
+public class CardGame {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private GameType gameType = GameType.DICE;
+    private GameType gameType = GameType.CARD;
 
     @ElementCollection
-    private Map<String, Integer> userResults = new HashMap<>(); //userId : 주사위 값
+    private Map<String, Integer> userCards = new HashMap<>(); // userId : 카드 숫자 (1~13)
 
     private String winner;
 

@@ -11,17 +11,17 @@ import java.util.Map;
 @Entity
 @Getter
 @Setter
-public class DiceGame {
+public class RpsGame {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private GameType gameType = GameType.DICE;
+    private GameType gameType = GameType.RPS;
 
     @ElementCollection
-    private Map<String, Integer> userResults = new HashMap<>(); //userId : 주사위 값
+    private Map<String, RpsChoice> userChoices = new HashMap<>();
 
     private String winner;
 

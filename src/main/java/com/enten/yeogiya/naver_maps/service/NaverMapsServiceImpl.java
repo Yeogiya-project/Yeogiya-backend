@@ -3,6 +3,8 @@ package com.enten.yeogiya.naver_maps.service;
 import com.enten.yeogiya.naver_maps.controller.response.AddressSearchResponse;
 import com.enten.yeogiya.naver_maps.controller.response.AddressSearchResult;
 import com.enten.yeogiya.naver_maps.controller.response.CenterPointResponse;
+import com.enten.yeogiya.naver_maps.controller.response.NaverSearchApiResponse;
+import com.enten.yeogiya.naver_maps.controller.response.NaverSearchItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class NaverMapsServiceImpl implements NaverMapsService {
 
     private final WebClient webClient;
 
-    // 1. 주소/장소 검색 (메인 기능)
+    // 1. 주소/장소 검색 (메인 기능) - Search API만 사용
     @Override
     public Mono<AddressSearchResponse> searchPlaces(String query) {
         System.out.println("검색어: " + query);
@@ -34,19 +36,43 @@ public class NaverMapsServiceImpl implements NaverMapsService {
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
                         .host("openapi.naver.com")
-                        .path("/v1/search/local.json")
+                        .path("/v1/search/local.json")  
                         .queryParam("query", query)
-                        .queryParam("display", 10)   // 10개 결과
+                        .queryParam("display", 10)
                         .queryParam("start", 1)
-                        .queryParam("sort", "random") // 랜덤 정렬
+                        .queryParam("sort", "random")
                         .build())
                 .header("X-Naver-Client-Id", searchClientId)
                 .header("X-Naver-Client-Secret", searchClientSecret)
                 .retrieve()
-                .bodyToMono(AddressSearchResponse.class)
-                .map(response -> {
-                    System.out.println("검색 결과: " + (response.getItems() != null ? response.getItems().size() : 0) + "개");
-                    return response;
+                .bodyToMono(NaverSearchApiResponse.class)
+                .map(naverResponse -> {
+                    System.out.println("Search API 결과: " + (naverResponse.getItems() != null ? naverResponse.getItems().size() : 0) + "개");
+                    
+                    List<AddressSearchResult> convertedItems = new ArrayList<>();
+                    if (naverResponse.getItems() != null) {
+                        for (NaverSearchItem item : naverResponse.getItems()) {
+                            AddressSearchResult converted = AddressSearchResult.builder()
+                                    .title(item.getTitle().replaceAll("</?b>", ""))
+                                    .category(item.getCategory())
+                                    .address(item.getAddress())
+                                    .roadAddress(item.getRoadAddress())
+                                    .mapx(item.getMapx())
+                                    .mapy(item.getMapy())
+                                    .distance(null)
+                                    .build();
+                            convertedItems.add(converted);
+                        }
+                    }
+                    
+                    return AddressSearchResponse.builder()
+                            .total(naverResponse.getTotal())
+                            .items(convertedItems)
+                            .build();
+                })
+                .doOnError(error -> {
+                    System.err.println("Search API 호출 에러: " + error.getMessage());
+                    error.printStackTrace();
                 })
                 .onErrorReturn(createEmptyResponse());
     }

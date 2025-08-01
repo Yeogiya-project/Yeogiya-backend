@@ -8,13 +8,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-// 주소/장소 검색 결과를 담는 응답 클래스
+// 네이버 Search API의 실제 응답 구조
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AddressSearchResponse {
-    private int total;                              // 총 검색 결과 개수
-    private List<AddressSearchResult> items;        // 검색 결과 목록
+public class NaverSearchApiResponse {
+    private String lastBuildDate;
+    private int total;
+    private int start;
+    private int display;
+    private List<NaverSearchItem> items;
 }

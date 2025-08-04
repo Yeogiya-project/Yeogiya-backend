@@ -37,6 +37,11 @@ frontend:
   authentication:
     origins: ${FRONTEND_AUTHENTICATION_ORIGINS}
 
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
+
 #kakao:
 #  login-url: ${KAKAO_LOGIN_URL}
 #  client-id: ${KAKAO_CLIENT_ID}
@@ -51,3 +56,7 @@ frontend:
 #  redirect-uri: ${GOOGLE_REDIRECT_URI}
 #  token-request-uri: ${GOOGLE_TOKEN_REQUEST_URI}
 #  user-info-request-uri: ${GOOGLE_USER_INFO_REQUEST_URI}
+
+
+# 카카오 로컬 API 사용을 위한 REST API 키
+# kakao.rest.api.key=a3de6cf1e3022ef9dd4dfbb25009ee9f

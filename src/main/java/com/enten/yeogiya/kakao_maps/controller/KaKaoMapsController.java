@@ -1,8 +1,10 @@
 package com.enten.yeogiya.kakao_maps.controller;
 
+import com.enten.yeogiya.kakao_maps.controller.request.MeetingPlaceRequest;
 import com.enten.yeogiya.kakao_maps.controller.request.ReverseGeocodingRequest;
 import com.enten.yeogiya.kakao_maps.controller.request.SearchRequest;
 import com.enten.yeogiya.kakao_maps.controller.request.SearchType;
+import com.enten.yeogiya.kakao_maps.controller.response.MeetingPlaceResponse;
 import com.enten.yeogiya.kakao_maps.controller.response.ReverseGeocodingResponse;
 import com.enten.yeogiya.kakao_maps.controller.response.SearchResponse;
 import com.enten.yeogiya.kakao_maps.service.KakaoMapsService;
@@ -32,7 +34,7 @@ public class KaKaoMapsController {
                 });
     }
 
-    @GetMapping("/reverse_geocoding")
+    @GetMapping("/reverse-geocoding")
     public Mono<ResponseEntity<ReverseGeocodingResponse>> reverseGeocoding(
             @ModelAttribute ReverseGeocodingRequest query) {
 
@@ -42,6 +44,19 @@ public class KaKaoMapsController {
                     System.err.println("지오코딩 에러: " + error.getMessage());
                     error.printStackTrace();
                     return Mono.just(ResponseEntity.internalServerError().build());
+                });
+    }
+    
+    @PostMapping("/meeting-place")
+    public Mono<ResponseEntity<MeetingPlaceResponse>> findMeetingPlace(
+            @RequestBody MeetingPlaceRequest request) {
+        
+        return kakaoMapsService.findMeetingPlace(request)
+                .map(ResponseEntity::ok)
+                .onErrorResume(error -> {
+                    System.err.println("약속 장소 검색 에러: " + error.getMessage());
+                    error.printStackTrace();
+                    return Mono.just(ResponseEntity.badRequest().build());
                 });
     }
 }

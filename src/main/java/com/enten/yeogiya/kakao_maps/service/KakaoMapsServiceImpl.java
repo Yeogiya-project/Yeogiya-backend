@@ -1,22 +1,25 @@
 package com.enten.yeogiya.kakao_maps.service;
 
-import com.enten.yeogiya.kakao_maps.controller.request.ReverseGeocodingRequest;
-import com.enten.yeogiya.kakao_maps.controller.request.SearchRequest;
+import com.enten.yeogiya.kakao_maps.controller.request.*;
+import com.enten.yeogiya.kakao_maps.controller.response.MeetingCenterPoint;
+import com.enten.yeogiya.kakao_maps.controller.response.MeetingPlaceResponse;
 import com.enten.yeogiya.kakao_maps.controller.response.ReverseGeocodingResponse;
 import com.enten.yeogiya.kakao_maps.controller.response.SearchResponse;
-import com.enten.yeogiya.kakao_maps.controller.request.SearchType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class KakaoMapsServiceImpl implements KakaoMapsService {
     private final WebClient kakaoWebClient;
 
-    @Value("${kakao.api.key}")
-    private String kakaoApiKey;
+    @Value("${kakao.rest.api.key}")
+    private String kakaoRestApiKey;
 
     public KakaoMapsServiceImpl(@Qualifier("kakaoWebClient") WebClient kakaoWebClient) {
         this.kakaoWebClient = kakaoWebClient;
@@ -74,7 +77,7 @@ public class KakaoMapsServiceImpl implements KakaoMapsService {
 
                     return uriBuilder.build();
                 })
-                .header("Authorization", "KakaoAK " + kakaoApiKey)
+                .header("Authorization", "KakaoAK " + kakaoRestApiKey)
                 .retrieve()
                 .bodyToMono(SearchResponse.class);
     }
@@ -97,8 +100,70 @@ public class KakaoMapsServiceImpl implements KakaoMapsService {
 
                     return uriBuilder.build();
                 })
-                .header("Authorization", "KakaoAK " + kakaoApiKey)
+                .header("Authorization", "KakaoAK " + kakaoRestApiKey)
                 .retrieve()
                 .bodyToMono(ReverseGeocodingResponse.class);
+    }
+
+    @Override
+    public Mono<MeetingCenterPoint> calculateCenterPoint(List<Map<String, Double>> locations) {
+        return Mono.fromCallable(() -> {
+            if (locations.isEmpty()) {
+                throw new IllegalArgumentException("위치 정보가 없습니다.");
+            }
+
+            double centerLat = locations.stream()
+                    .mapToDouble(location -> location.get("lat"))
+                    .average()
+                    .orElseThrow(() -> new IllegalArgumentException("위도 계산 실패"));
+
+            double centerLng = locations.stream()
+                    .mapToDouble(location -> location.get("lng"))
+                    .average()
+                    .orElseThrow(() -> new IllegalArgumentException("경도 계산 실패"));
+
+            return MeetingCenterPoint.builder()
+                    .lat(centerLat)
+                    .lng(centerLng)
+                    .participantCount(locations.size())
+                    .build();
+        });
+    }
+
+    @Override
+    public Mono<MeetingPlaceResponse> findMeetingPlace(MeetingPlaceRequest request) {
+        if (request.getMeetingLocations() == null || request.getMeetingLocations().isEmpty()) {
+            return Mono.error(new IllegalArgumentException("참가자 위치 정보가 필요합니다."));
+        }
+
+        List<Map<String, Double>> locationMaps = request.getMeetingLocations().stream()
+                .map(location -> Map.of(
+                        "lat", location.getLat(),
+                        "lng", location.getLng()
+                ))
+                .toList();
+
+        return calculateCenterPoint(locationMaps)
+                .flatMap(centerPoint -> {
+                    SearchRequest searchRequest = new SearchRequest();
+                    searchRequest.setCategoryGroupCode(request.getCategoryGroupCode());
+                    searchRequest.setX(centerPoint.getLng().toString());
+                    searchRequest.setY(centerPoint.getLat().toString());
+                    searchRequest.setRadius(request.getRadius());
+                    searchRequest.setSize(request.getSize());
+                    searchRequest.setSort("distance");
+
+                    return searchPlaces(searchRequest, SearchType.CATEGORY)
+                            .map(searchResponse -> {
+                                MeetingPlaceResponse response = new MeetingPlaceResponse();
+                                response.setMeetingCenterPoint(centerPoint);
+                                response.setRecommendedPlaces(List.of(searchResponse));
+
+                                return response;
+                            });
+                })
+                .onErrorMap(throwable ->
+                        new RuntimeException("약속 장소 검색 중 오류 발생: " + throwable.getMessage(), throwable)
+                );
     }
 }

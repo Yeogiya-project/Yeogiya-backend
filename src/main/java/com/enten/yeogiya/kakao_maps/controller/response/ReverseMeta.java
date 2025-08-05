@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReverseMeta {
     @JsonProperty("total_count")
-    private int totalCount;
+    private Integer totalCount;
 }

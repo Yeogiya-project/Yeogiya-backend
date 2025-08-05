@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchMeta {
     @JsonProperty("total_count")
-    private int totalCount;
+    private Integer totalCount;
 
     @JsonProperty("pageable_count")
-    private int pageableCount;
+    private Integer pageableCount;
 
     @JsonProperty("is_end")
     private boolean isEnd;

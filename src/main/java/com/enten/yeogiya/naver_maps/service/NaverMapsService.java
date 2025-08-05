@@ -13,9 +13,6 @@ public interface NaverMapsService {
     // 주소/장소 검색 (가장 중요한 기능)
     Mono<AddressSearchResponse> searchPlaces(String query);
     
-    // 근처 지하철역 검색
-    Mono<AddressSearchResponse> findNearbyStations(double lat, double lng);
-    
     // 중간지점 계산
     Mono<CenterPointResponse> calculateCenterPoint(List<Map<String, Double>> locations);
 }

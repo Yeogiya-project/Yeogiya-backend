@@ -36,26 +36,7 @@ public class NaverMapsController {
                 });
     }
     
-    // 2. 근처 지하철역 검색 API
-    // 사용법: GET /api/naver-maps/nearby-stations?lat=37.5666&lng=126.9784
-    @GetMapping("/nearby-stations")
-    public Mono<ResponseEntity<AddressSearchResponse>> findNearbyStations(
-            @RequestParam double lat, 
-            @RequestParam double lng) {
-        System.out.println("근처 지하철역 검색 요청: " + lat + ", " + lng);
-        
-        return naverMapsService.findNearbyStations(lat, lng)
-                .map(result -> {
-                    System.out.println("지하철역 검색 완료: " + result.getTotal() + "개 발견");
-                    return ResponseEntity.ok(result);
-                })
-                .onErrorResume(error -> {
-                    System.err.println("지하철역 검색 에러: " + error.getMessage());
-                    return Mono.just(ResponseEntity.internalServerError().build());
-                });
-    }
-    
-    // 3. 중간지점 계산 API
+    // 2. 중간지점 계산 API
     // 사용법: POST /api/naver-maps/center-point
     // Body: [{"lat": 37.5666, "lng": 126.9784}, {"lat": 37.5567, "lng": 126.9723}]
     @PostMapping("/center-point")

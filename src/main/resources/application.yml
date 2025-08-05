@@ -46,6 +46,12 @@ naver:
     client-id: ${NAVER_SEARCH_CLIENT_ID}
     client-secret: ${NAVER_SEARCH_CLIENT_SECRET}
 
+kakao:
+  api:
+    key: ${KAKAO_SEARCH_API_KEY}
+
+
+
 #kakao:
 #  login-url: ${KAKAO_LOGIN_URL}
 #  client-id: ${KAKAO_CLIENT_ID}

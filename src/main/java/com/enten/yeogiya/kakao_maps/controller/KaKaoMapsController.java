@@ -46,11 +46,11 @@ public class KaKaoMapsController {
                     return Mono.just(ResponseEntity.internalServerError().build());
                 });
     }
-    
+
     @PostMapping("/meeting-place")
     public Mono<ResponseEntity<MeetingPlaceResponse>> findMeetingPlace(
             @RequestBody MeetingPlaceRequest request) {
-        
+
         return kakaoMapsService.findMeetingPlace(request)
                 .map(ResponseEntity::ok)
                 .onErrorResume(error -> {

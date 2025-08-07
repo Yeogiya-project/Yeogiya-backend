@@ -6,6 +6,7 @@ import com.enten.yeogiya.game.dto.TimingGameRequest;
 import com.enten.yeogiya.game.dto.TimingGameResponse;
 import com.enten.yeogiya.game.entity.CardGame;
 import com.enten.yeogiya.game.entity.DiceGame;
+import com.enten.yeogiya.game.entity.RouletteGame;
 import com.enten.yeogiya.game.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class GameController {
     private final CardGameService cardGameService;
     private final RpsGameService rpsGameService;
     private final TimingGameService timingGameService;
+    private final RouletteGameService rouletteGameService;
 
     @PostMapping("/dice/play")
     public ResponseEntity<DiceGame> play(@RequestBody List<String> participants) {
@@ -45,5 +47,11 @@ public class GameController {
     public ResponseEntity<TimingGameResponse> playTimingGame(@RequestBody TimingGameRequest request) {
         TimingGameResponse response = timingGameService.playTimingGame(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/roulette/play")
+    public ResponseEntity<RouletteGame> playRouletteGame(@RequestBody List<String> userIds) {
+        RouletteGame result = rouletteGameService.playRouletteGame(userIds);
+        return ResponseEntity.ok(result);
     }
 }

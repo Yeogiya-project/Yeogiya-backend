@@ -25,7 +25,7 @@ public class RecommendationService {
 
     private static final String KAKAO_LOCAL_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/keyword.json";
 
-    public RestaurantDTO recommend(double latitude, double longitude, String keyword) {
+    public RestaurantDTO recommend(double latitude, double longitude, String keyword, String categoryCode) {
 
         // 1. 카카오 호출을을 위한 URI
         URI uri = UriComponentsBuilder
@@ -34,7 +34,8 @@ public class RecommendationService {
                 .queryParam("x", longitude)
                 .queryParam("y", latitude)
                 .queryParam("radius", 1000) // 검색 반경
-                .queryParam("category_group_code", "FD6")
+                .queryParam("category_group_code", categoryCode)
+                .queryParam("size", 15)
                 .queryParam("sort", "distance")
                 .encode()
                 .build()

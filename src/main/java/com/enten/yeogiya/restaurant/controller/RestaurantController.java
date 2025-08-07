@@ -23,10 +23,11 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDTO> recommendRestaurant(
             @RequestParam("lat") double lat,
             @RequestParam("lng") double lng,
-            @RequestParam("keyword") String keyword) {
+            @RequestParam("keyword") String keyword,
+            @RequestParam("category") String categoryCode) {
 
         // 서비스 클래스를 호출하여 비즈니스 로직 수행
-        RestaurantDTO result = recommendationService.recommend(lat, lng, keyword);
+        RestaurantDTO result = recommendationService.recommend(lat, lng, keyword, categoryCode);
 
         if (result == null) {
             // 결과 없으면 404 Not Found 반환

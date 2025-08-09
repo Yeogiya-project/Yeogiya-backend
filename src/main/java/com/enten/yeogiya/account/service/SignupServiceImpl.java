@@ -23,7 +23,7 @@ public class SignupServiceImpl implements SignupService {
     private final AccountLoginTypeRepository accountLoginTypeRepository;
 
     @Override
-    public AccountProfile register(RoleType roleType, LoginType loginType, String email, String nickName) {
+    public AccountProfile register( LoginType loginType, String email, String nickName) {
 
         boolean emailExists = accountProfileService.existByEmail(email);
         boolean nicknameExists = accountProfileService.existByNickname(nickName);
@@ -46,7 +46,7 @@ public class SignupServiceImpl implements SignupService {
         AccountLoginType accountLoginType = accountLoginTypeRepository.findByLoginType(loginType)
                 .orElseThrow(() -> new IllegalStateException("LoginType.%s 이 DB에 없습니다.".formatted(loginType)));
 
-        Account createdAccount = new Account(roleType, loginType);
+        Account createdAccount = new Account(loginType);
         Account savedAccount = accountService.save(createdAccount);
 
 

@@ -48,7 +48,7 @@ public class AccountServiceTest {
         String email = "abc123@naver.com";
         String nickName = "짱짱맨";
 
-        Account account = new Account(RoleType.USER, LoginType.KAKAO);
+        Account account = new Account(LoginType.KAKAO);
         AccountProfile accountProfile = new AccountProfile(account, nickName, email);
 
         when(accountProfileService.existByEmail(email)).thenReturn(false);
@@ -61,7 +61,7 @@ public class AccountServiceTest {
         when(accountProfileService.save(any(AccountProfile.class))).thenReturn(accountProfile);
 
         // when
-        AccountProfile result = signupService.register(RoleType.USER, LoginType.KAKAO, email, nickName);
+        AccountProfile result = signupService.register(LoginType.KAKAO, email, nickName);
 
         // then
         Assertions.assertThat(result).isEqualTo(accountProfile);
@@ -78,7 +78,7 @@ public class AccountServiceTest {
 
         // when, then
         assertThrows(DuplicateEmailException.class, () -> {
-            signupService.register(RoleType.USER, LoginType.KAKAO, email, nickName);
+            signupService.register(LoginType.KAKAO, email, nickName);
         });
     }
 
@@ -94,7 +94,7 @@ public class AccountServiceTest {
 
         // when, then
         assertThrows(DuplicateNicknameException.class, () -> {
-            signupService.register(RoleType.USER, LoginType.KAKAO, email, nickName);
+            signupService.register(LoginType.KAKAO, email, nickName);
         });
     }
 
@@ -109,7 +109,7 @@ public class AccountServiceTest {
 
         // when, then
         assertThrows(DuplicateEmailAndNicknameException.class, () -> {
-            signupService.register(RoleType.USER, LoginType.KAKAO, email, nickName);
+            signupService.register(LoginType.KAKAO, email, nickName);
         });
     }
 

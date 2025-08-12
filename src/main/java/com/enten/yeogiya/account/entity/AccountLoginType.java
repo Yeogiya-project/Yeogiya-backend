@@ -17,6 +17,9 @@ public class AccountLoginType {
     @Column(name = "login_type", nullable = false, unique = true)
     private LoginType loginType;
 
+    Long accountId;
+
+
     public AccountLoginType() {
     }
 

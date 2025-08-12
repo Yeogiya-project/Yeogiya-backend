@@ -21,9 +21,9 @@ public class Account {
 
     private Boolean enabled;
 
-    public Account(RoleType roleType, LoginType loginType) {
+    public Account(LoginType loginType) {
         this.loginType = loginType;
-        this.roleType = roleType;
+        this.roleType = RoleType.USER;
         this.enabled = true;
     }
 }

@@ -1,8 +1,7 @@
-package com.enten.yeogiya.account.controller.request;
+package com.enten.yeogiya.account.service.request;
 
 
 import com.enten.yeogiya.account.entity.LoginType;
-import com.enten.yeogiya.account.entity.RoleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,11 +10,6 @@ import lombok.RequiredArgsConstructor;
 public class RegisterAccountRequest {
 
 
-    private final String email;
-    private final String nickname;
     private final LoginType loginType;
-    private final RoleType roleType;
-
-
 
 }

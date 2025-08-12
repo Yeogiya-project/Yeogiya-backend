@@ -7,6 +7,6 @@ import com.enten.yeogiya.account_profile.entity.AccountProfile;
 
 public interface SignupService {
 
-    AccountProfile register(RoleType roleType, LoginType loginType, String email, String nickName);
+    AccountProfile register(LoginType loginType, String email, String nickName);
 
 }
